@@ -35,6 +35,11 @@ The audio_provider and command_responder must be modified according to the envir
 This is a sample of speech recognition.
 We use the M5StickC's I2S built-in microphone.
 
+### person_detection
+
+It is a person detection using a camera.
+The image_provider and detection_responder must be modified according to the environment in which they are used.
+
 ## How to make this library
 ```
 wget https://github.com/tensorflow/tensorflow/archive/v2.1.1.tar.gz

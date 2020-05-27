@@ -25,6 +25,16 @@ The accelerometer_handler and output_handler must be modified according to the e
 This is gesture recognition using acceleration.
 This is a sample that acquires acceleration from the IMU(MPU6886) of M5StickC.
 
+### micro_speech
+
+This is a sample of speech recognition.
+The audio_provider and command_responder must be modified according to the environment in which they are used.
+
+### micro_speech_M5StickC
+
+This is a sample of speech recognition.
+We use the M5StickC's I2S built-in microphone.
+
 ## How to make this library
 ```
 wget https://github.com/tensorflow/tensorflow/archive/v2.1.1.tar.gz
@@ -42,5 +52,7 @@ This is the base file.
 ## special thanks
 
 - https://www.tensorflow.org/lite/microcontrollers/overview
-- Arduino_TensorFlowLite libraries
+- Arduino_TensorFlowLite librarie
 - https://github.com/boochow/TFLite_Micro_MagicWand_M5Stack
+- https://github.com/boochow/TFLite_Micro_MicroSpeech_M5Stack/tree/m5stickc
+

@@ -40,6 +40,16 @@ We use the M5StickC's I2S built-in microphone.
 It is a person detection using a camera.
 The image_provider and detection_responder must be modified according to the environment in which they are used.
 
+### person_detection_ESP32-Camera
+
+It is a person detection using a camera.
+This is a sample of using the ESP32 camera driver. Please configure the device you want to use in config.h.
+
+### person_detection_T-CameraV05
+
+It is a person detection using a camera.
+This is an example of the use of TTGO T-Camera V05.
+
 ## How to make this library
 ```
 wget https://github.com/tensorflow/tensorflow/archive/v2.1.1.tar.gz

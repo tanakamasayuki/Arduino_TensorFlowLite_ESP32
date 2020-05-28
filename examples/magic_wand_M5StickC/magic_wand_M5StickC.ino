@@ -51,6 +51,14 @@ bool should_clear_buffer = false;
 // The name of this function is important for Arduino compatibility.
 void setup() {
   M5.begin();
+  M5.Lcd.fillScreen(BLACK);
+  M5.Lcd.setCursor(0, 0);
+  M5.Lcd.setTextFont(2);
+  M5.Lcd.setTextColor(YELLOW);
+  M5.Lcd.printf("Magic Wand\n");
+  M5.Lcd.setTextColor(WHITE, BLACK);
+  M5.Lcd.setTextFont(1);
+  M5.Lcd.setTextSize(2);
 
   // Set up logging. Google style is to avoid globals or statics because of
   // lifetime uncertainty, but since this has a trivial destructor it's okay.
@@ -137,10 +145,44 @@ void loop() {
           f[381], f[382], f[383], p[0], p[1], p[2]);
   error_reporter->Report(s);
 
+  M5.Lcd.setCursor(0, 32);
+  M5.Lcd.setTextColor(ORANGE, BLACK);
+  M5.Lcd.printf("INPUT \n");
+  M5.Lcd.setTextColor(WHITE, BLACK);
+  M5.Lcd.printf("Z%5.0f\n", f[381]);
+  M5.Lcd.printf("X%5.0f\n", f[382]);
+  M5.Lcd.printf("Y%5.0f\n", f[383]);
+  M5.Lcd.setTextColor(ORANGE, BLACK);
+  M5.Lcd.printf("OUTPUT\n");
+  M5.Lcd.setTextColor(WHITE, BLACK);
+  M5.Lcd.printf("W%5.2f\n", p[0]);
+  M5.Lcd.printf("R%5.2f\n", p[1]);
+  M5.Lcd.printf("S%5.2f\n", p[2]);
+
+
   // Analyze the results to obtain a prediction
   int gesture_index = PredictGesture(interpreter->output(0)->data.f);
   // Clear the buffer next time we read data
   should_clear_buffer = gesture_index < 3;
   // Produce an output
   HandleOutput(error_reporter, gesture_index);
+
+  if (gesture_index < 3) {
+    M5.Lcd.setCursor(20, 60);
+    M5.Lcd.setTextFont(1);
+    M5.Lcd.setTextSize(7);
+    if (gesture_index == 0) {
+      M5.Lcd.setTextColor(RED, BLACK);
+      M5.Lcd.print("W");
+    } else if (gesture_index == 1) {
+      M5.Lcd.setTextColor(BLUE, BLACK);
+      M5.Lcd.print("R");
+    } else if (gesture_index == 2) {
+      M5.Lcd.setTextColor(GREEN, BLACK);
+      M5.Lcd.print("S");
+    }
+    M5.Lcd.setTextSize(2);
+    M5.Lcd.setTextFont(1);
+    M5.Lcd.setTextColor(WHITE, BLACK);
+  }
 }

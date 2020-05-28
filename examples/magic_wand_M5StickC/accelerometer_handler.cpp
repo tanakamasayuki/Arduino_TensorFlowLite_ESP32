@@ -67,7 +67,6 @@ bool ReadAccelerometer(tflite::ErrorReporter* error_reporter, float* input,
 
   if (pending_initial_data && begin_index >= 200) {
     pending_initial_data = false;
-    M5.Lcd.fillScreen(BLACK);
   }
 
   if (pending_initial_data) {

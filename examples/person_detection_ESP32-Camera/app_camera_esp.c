@@ -63,5 +63,12 @@ int app_camera_init() {
     ESP_LOGE(TAG, "Camera init failed with error 0x%x", err);
     return -1;
   }
+
+#if CONFIG_CAMERA_VFLIP
+  sensor_t *sensor = esp_camera_sensor_get();
+  sensor->set_vflip(sensor, 1);
+  sensor->set_hmirror(sensor, 1);
+#endif
+
   return 0;
 }

@@ -63,7 +63,6 @@ TfLiteStatus PerformCapture(tflite::ErrorReporter* error_reporter,
   if (ret != 0) {
     return kTfLiteError;
   }
-  TF_LITE_REPORT_ERROR(error_reporter, "Image Captured\n");
   if (fb->width == 96 && fb->height == 96) {
     memcpy(image_data, fb->buf, fb->len);
   } else {
@@ -80,6 +79,39 @@ TfLiteStatus PerformCapture(tflite::ErrorReporter* error_reporter,
     }
   }
   esp_camera_fb_return(fb);
+
+  // Debug Out
+  TF_LITE_REPORT_ERROR(error_reporter, "");
+  char str[128];
+  for (int y = 0; y < 96; y += 4) {
+    int pos = 0;
+    memset(str, 0, sizeof(str));
+    for (int x = 0; x < 96; x += 2) {
+      int getPos = y * 96 + x;
+      int color = image_data[getPos];
+
+      if (color > 224) {
+        str[pos] = ' ';
+      } else if (color > 192) {
+        str[pos] = '-';
+      } else if (color > 160) {
+        str[pos] = '+';
+      } else if (color > 128) {
+        str[pos] = '=';
+      } else if (color > 96) {
+        str[pos] = '*';
+      } else if (color > 64) {
+        str[pos] = 'H';
+      } else if (color > 32) {
+        str[pos] = '#';
+      } else {
+        str[pos] = 'M';
+      }
+
+      pos++;
+    }
+    TF_LITE_REPORT_ERROR(error_reporter, str);
+  }
 
   /* here the esp camera can give you grayscale image directly */
   return kTfLiteOk;

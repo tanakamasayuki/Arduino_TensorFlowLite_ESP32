@@ -71,7 +71,7 @@ This is a sample of using the ESP32 camera driver. Please configure the device y
 ==================###########H++++-+============
 *================+##########H###H=*+======*==+=*
 H**==============###########*===-HH+===+======**
-person score:89 no person score 226
+Person score:89 No person score:226
 ```
 
 ```
@@ -99,7 +99,7 @@ person score:89 no person score 226
 ==+M####MMM########M=H###HH#######H#MMH#####====
 ====###MMM########H########MH##H###MMM######H+=*
 ===##H#MMM#####H###M#HHHHHHH####HH#MMMMM####H-**
-person score:251 no person score 42
+Person score:251 No person score:42
 ```
 
 

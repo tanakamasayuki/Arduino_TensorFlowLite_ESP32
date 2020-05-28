@@ -20,6 +20,6 @@ limitations under the License.
 // should implement their own versions of this function.
 void RespondToDetection(tflite::ErrorReporter* error_reporter,
                         uint8_t person_score, uint8_t no_person_score) {
-  error_reporter->Report("person score:%d no person score %d", person_score,
+  error_reporter->Report("Person score:%d No person score:%d", person_score,
                          no_person_score);
 }

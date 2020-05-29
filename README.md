@@ -133,6 +133,6 @@ This is the base file.
 
 - https://www.tensorflow.org/lite/microcontrollers/overview
 - Arduino_TensorFlowLite librarie
+- https://github.com/adafruit/Adafruit_TFLite
 - https://github.com/boochow/TFLite_Micro_MagicWand_M5Stack
 - https://github.com/boochow/TFLite_Micro_MicroSpeech_M5Stack/tree/m5stickc
-

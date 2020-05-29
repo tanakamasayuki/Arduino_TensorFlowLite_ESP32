@@ -154,9 +154,9 @@ void loop() {
   M5.Lcd.setTextColor(ORANGE, BLACK);
   M5.Lcd.printf("INPUT \n");
   M5.Lcd.setTextColor(WHITE, BLACK);
-  M5.Lcd.printf("Z%5.0f\n", f[381]);
-  M5.Lcd.printf("X%5.0f\n", f[382]);
-  M5.Lcd.printf("Y%5.0f\n", f[383]);
+  M5.Lcd.printf("X%5.0f\n", f[381]);
+  M5.Lcd.printf("Y%5.0f\n", f[382]);
+  M5.Lcd.printf("Z%5.0f\n", f[383]);
   M5.Lcd.setTextColor(ORANGE, BLACK);
   M5.Lcd.printf("OUTPUT\n");
   M5.Lcd.setTextColor(WHITE, BLACK);

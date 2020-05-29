@@ -21,19 +21,24 @@ Outputs sine waves to serial outputs and build-in LEDs.
 This is gesture recognition using acceleration.
 The accelerometer_handler and output_handler must be modified according to the environment in which they are used.
 
-### magic_wand_M5StickC
-This is gesture recognition using acceleration.
-This is a sample that acquires acceleration from the IMU(MPU6886) of M5StickC.
+### magic_wand_*
+
+A sketch customized to look like a specific board.
+
+- M5StickC
+- M5StackFire
 
 ### micro_speech
 
 This is a sample of speech recognition.
 The audio_provider and command_responder must be modified according to the environment in which they are used.
 
-### micro_speech_M5StickC
+### micro_speech_*
 
-This is a sample of speech recognition.
-We use the M5StickC's I2S built-in microphone.
+A sketch customized to look like a specific board.
+
+- M5StickC
+- M5StackFire
 
 ### person_detection
 
@@ -103,10 +108,12 @@ Person score:251 No person score:42
 ```
 
 
-### person_detection_T-CameraV05
+### person_detection_*
 
-It is a person detection using a camera.
-This is an example of the use of TTGO T-Camera V05.
+A sketch customized to look like a specific board.
+
+- M5CameraModelB
+- T-CameraV05
 
 ## How to make this library
 ```

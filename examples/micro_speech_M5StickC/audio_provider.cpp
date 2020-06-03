@@ -1,4 +1,4 @@
-/* Copyright 2018 The TensorFlow Authors. All Rights Reserved.
+/* Copyright 2019 The TensorFlow Authors. All Rights Reserved.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -14,18 +14,23 @@
   ==============================================================================*/
 
 #include "audio_provider.h"
-
 #include "micro_model_settings.h"
-
+#include <Arduino.h>
 #include <M5StickC.h>
 #include <driver/i2s.h>
 
-#define PIN_MICROPHONE 34
+#define I2S_NUM           I2S_NUM_0           // 0 or 1
+#define I2S_SAMPLE_RATE   16000
 
-#define SAMPLING_FREQ  16000
-#define BUFFER_SIZE    512
+#define I2S_PIN_CLK       I2S_PIN_NO_CHANGE
+#define I2S_PIN_WS        0
+#define I2S_PIN_DOUT      I2S_PIN_NO_CHANGE
+#define I2S_PIN_DIN       34
+
+#define BUFFER_SIZE       512
 
 void CaptureSamples();
+extern QueueHandle_t xQueueAudioWave;
 
 namespace {
 bool g_is_audio_initialized = false;
@@ -39,63 +44,56 @@ int16_t g_audio_output_buffer[kMaxAudioSampleSize];
 volatile int32_t g_latest_audio_timestamp = 0;
 // Our callback buffer for collecting a chunk of data
 volatile int16_t recording_buffer[BUFFER_SIZE];
-
-volatile int max_audio = -32768, min_audio = 32768;
 }  // namespace
-
-#define PIN_I2S_CLK 0
-#define PIN_I2S_WS 13
-#define PIN_I2S_DIN 34
-#define PIN_I2S_DOUT 15
 
 void InitI2S()
 {
   i2s_config_t i2s_config = {
-    .mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_RX | I2S_MODE_PDM),
-    .sample_rate =  SAMPLING_FREQ,
-    .bits_per_sample = I2S_BITS_PER_SAMPLE_16BIT, // is fixed at 12bit, stereo, MSB
-    .channel_format = I2S_CHANNEL_FMT_ALL_RIGHT,
+    .mode                 = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_RX | I2S_MODE_PDM),
+    .sample_rate          = I2S_SAMPLE_RATE,
+    .bits_per_sample      = I2S_BITS_PER_SAMPLE_16BIT,
+    .channel_format       = I2S_CHANNEL_FMT_ALL_LEFT,
     .communication_format = I2S_COMM_FORMAT_I2S,
-    .intr_alloc_flags = ESP_INTR_FLAG_LEVEL1,
-    .dma_buf_count = 20,
-    .dma_buf_len = 32,
-    .use_apll = false,
-    .tx_desc_auto_clear = false,
-    .fixed_mclk = 0
+    .intr_alloc_flags     = ESP_INTR_FLAG_LEVEL1,
+    .dma_buf_count        = 4,
+    .dma_buf_len          = 256,
+    .use_apll             = false,
+    .tx_desc_auto_clear   = false,
+    .fixed_mclk           = 0
   };
-  i2s_pin_config_t pin_config;
-  pin_config.bck_io_num    = I2S_PIN_NO_CHANGE;
-  pin_config.ws_io_num     = PIN_I2S_CLK;
-  pin_config.data_out_num  = I2S_PIN_NO_CHANGE;
-  pin_config.data_in_num   = PIN_I2S_DIN;
+  i2s_pin_config_t pin_config = {
+    .bck_io_num           = I2S_PIN_CLK,
+    .ws_io_num            = I2S_PIN_WS,
+    .data_out_num         = I2S_PIN_DOUT,
+    .data_in_num          = I2S_PIN_DIN,
+  };
 
-  i2s_driver_install(I2S_NUM_0, &i2s_config, 0, NULL);
-  i2s_set_pin(I2S_NUM_0, &pin_config);
-  i2s_set_clk(I2S_NUM_0, SAMPLING_FREQ, I2S_BITS_PER_SAMPLE_16BIT, I2S_CHANNEL_MONO);
+  i2s_driver_install(I2S_NUM, &i2s_config, 0, NULL);
+  i2s_set_pin(I2S_NUM, &pin_config);
+  i2s_set_clk(I2S_NUM, I2S_SAMPLE_RATE, I2S_BITS_PER_SAMPLE_16BIT, I2S_CHANNEL_MONO);
 }
 
 void AudioRecordingTask(void *pvParameters) {
   static uint16_t audio_idx = 0;
   size_t bytes_read;
-  const int readBufSize = 32;
-  int16_t i2s_data[readBufSize];
+  int16_t i2s_data;
+  int16_t sample;
 
   while (1) {
-    i2s_read(I2S_NUM_0, &i2s_data, readBufSize * 2, &bytes_read, portMAX_DELAY );
-    for (int i = 0; i < (bytes_read / 2); i++) {
-      recording_buffer[audio_idx] = i2s_data[i];
-      if (max_audio < i2s_data[i]) {
-        max_audio = i2s_data[i];
-      }
-      //max_audio = max(max_audio, sample);
-      min_audio = min(min_audio, i2s_data[i]);
-      audio_idx++;
 
-      if (audio_idx >= BUFFER_SIZE) {
-        CaptureSamples();
-        max_audio = -32768, min_audio = 32768;
-        audio_idx = 0;
-      }
+    if (audio_idx >= BUFFER_SIZE) {
+      xQueueSend(xQueueAudioWave, &sample, 0);
+      CaptureSamples();
+      audio_idx = 0;
+    }
+
+    i2s_read(I2S_NUM_0, &i2s_data, 2, &bytes_read, portMAX_DELAY );
+
+    if (bytes_read > 0) {
+      //sample = (0xfff - (i2s_data & 0xfff)) - 0x800;
+      sample = i2s_data;
+      recording_buffer[audio_idx] = sample;
+      audio_idx++;
     }
   }
 }
@@ -122,12 +120,12 @@ void CaptureSamples() {
 }
 
 TfLiteStatus InitAudioRecording(tflite::ErrorReporter* error_reporter) {
+  delay(10);
 
-  Serial.begin(115200);
-
-  Serial.println("init audio"); delay(10);
   InitI2S();
-  xTaskCreatePinnedToCore(AudioRecordingTask, "AudioRecordingTask", 2048, NULL, 10, NULL, 1);
+
+  xTaskCreatePinnedToCore(AudioRecordingTask, "AudioRecordingTask", 2048, NULL, 10, NULL, 0);
+
   // Block until we have our first audio sample
   while (!g_latest_audio_timestamp) {
     delay(1);

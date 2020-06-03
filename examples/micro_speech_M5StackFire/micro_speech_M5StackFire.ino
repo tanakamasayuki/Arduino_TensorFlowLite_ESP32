@@ -1,17 +1,17 @@
 /* Copyright 2018 The TensorFlow Authors. All Rights Reserved.
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
 
     http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-==============================================================================*/
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  ==============================================================================*/
 
 #include <TensorFlowLite_ESP32.h>
 
@@ -47,8 +47,13 @@ constexpr int kTensorArenaSize = 10 * 1024;
 uint8_t tensor_arena[kTensorArenaSize];
 }  // namespace
 
+QueueHandle_t xQueueAudioWave;
+#define QueueAudioWaveSize 32
+
 // The name of this function is important for Arduino compatibility.
 void setup() {
+  xQueueAudioWave = xQueueCreate(QueueAudioWaveSize, sizeof(int16_t));
+  
   // Set up logging. Google style is to avoid globals or statics because of
   // lifetime uncertainty, but since this has a trivial destructor it's okay.
   // NOLINTNEXTLINE(runtime-global-variables)
@@ -60,9 +65,9 @@ void setup() {
   model = tflite::GetModel(g_tiny_conv_micro_features_model_data);
   if (model->version() != TFLITE_SCHEMA_VERSION) {
     error_reporter->Report(
-        "Model provided is schema version %d not equal "
-        "to supported version %d.",
-        model->version(), TFLITE_SCHEMA_VERSION);
+      "Model provided is schema version %d not equal "
+      "to supported version %d.",
+      model->version(), TFLITE_SCHEMA_VERSION);
     return;
   }
 
@@ -76,18 +81,18 @@ void setup() {
   // NOLINTNEXTLINE(runtime-global-variables)
   static tflite::MicroMutableOpResolver micro_mutable_op_resolver;
   micro_mutable_op_resolver.AddBuiltin(
-      tflite::BuiltinOperator_DEPTHWISE_CONV_2D,
-      tflite::ops::micro::Register_DEPTHWISE_CONV_2D());
+    tflite::BuiltinOperator_DEPTHWISE_CONV_2D,
+    tflite::ops::micro::Register_DEPTHWISE_CONV_2D());
   micro_mutable_op_resolver.AddBuiltin(
-      tflite::BuiltinOperator_FULLY_CONNECTED,
-      tflite::ops::micro::Register_FULLY_CONNECTED());
+    tflite::BuiltinOperator_FULLY_CONNECTED,
+    tflite::ops::micro::Register_FULLY_CONNECTED());
   micro_mutable_op_resolver.AddBuiltin(tflite::BuiltinOperator_SOFTMAX,
                                        tflite::ops::micro::Register_SOFTMAX());
 
   // Build an interpreter to run the model with.
   static tflite::MicroInterpreter static_interpreter(
-      model, micro_mutable_op_resolver, tensor_arena, kTensorArenaSize,
-      error_reporter);
+    model, micro_mutable_op_resolver, tensor_arena, kTensorArenaSize,
+    error_reporter);
   interpreter = &static_interpreter;
 
   // Allocate memory from the tensor_arena for the model's tensors.
@@ -111,7 +116,7 @@ void setup() {
   // that will provide the inputs to the neural network.
   // NOLINTNEXTLINE(runtime-global-variables)
   static FeatureProvider static_feature_provider(kFeatureElementCount,
-                                                 model_input->data.uint8);
+      model_input->data.uint8);
   feature_provider = &static_feature_provider;
 
   static RecognizeCommands static_recognizer(error_reporter);
@@ -120,23 +125,41 @@ void setup() {
   previous_time = 0;
 
   InitResponder();
+
+  Serial.printf("model_input->name          : %s\n", model_input->name);
+  Serial.printf("model_input->type          : %d\n", model_input->type);
+  Serial.printf("model_input->bytes         : %d\n", model_input->bytes);
+  Serial.printf("model_input->dims->size    : %d\n", model_input->dims->size);
+  Serial.printf("model_input->dims->data[0] : %d\n", model_input->dims->data[0]); // 1
+  Serial.printf("model_input->dims->data[1] : %d\n", model_input->dims->data[1]); // kFeatureSliceCount
+  Serial.printf("model_input->dims->data[2] : %d\n", model_input->dims->data[2]); // kFeatureSliceSize
 }
 
 // The name of this function is important for Arduino compatibility.
 void loop() {
+
+  int16_t wave = 0;
+  for (int i = 0; i < QueueAudioWaveSize; i++) {
+    if (xQueueReceive(xQueueAudioWave, &wave, 0) == pdTRUE) {
+      drawWave(wave);
+    }
+  }  
+
   // Fetch the spectrogram for the current time.
   const int32_t current_time = LatestAudioTimestamp();
   int how_many_new_slices = 0;
   TfLiteStatus feature_status = feature_provider->PopulateFeatureData(
-      error_reporter, previous_time, current_time, &how_many_new_slices);
+                                  error_reporter, previous_time, current_time, &how_many_new_slices);
   if (feature_status != kTfLiteOk) {
     error_reporter->Report("Feature generation failed");
+    delay(1);
     return;
   }
   previous_time = current_time;
   // If no new audio samples have been received since last time, don't bother
   // running the network model.
   if (how_many_new_slices == 0) {
+    delay(1);
     return;
   }
 
@@ -144,6 +167,7 @@ void loop() {
   TfLiteStatus invoke_status = interpreter->Invoke();
   if (invoke_status != kTfLiteOk) {
     error_reporter->Report("Invoke failed");
+    delay(1);
     return;
   }
 
@@ -154,9 +178,10 @@ void loop() {
   uint8_t score = 0;
   bool is_new_command = false;
   TfLiteStatus process_status = recognizer->ProcessLatestResults(
-      output, current_time, &found_command, &score, &is_new_command);
+                                  output, current_time, &found_command, &score, &is_new_command);
   if (process_status != kTfLiteOk) {
     error_reporter->Report("RecognizeCommands::ProcessLatestResults() failed");
+    delay(1);
     return;
   }
   // Do something based on the recognized command. The default implementation
@@ -164,4 +189,8 @@ void loop() {
   // own function for a real application.
   RespondToCommand(error_reporter, current_time, found_command, score,
                    is_new_command);
+
+  drawInput(model_input->data.uint8);
+
+  delay(1);
 }

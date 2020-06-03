@@ -100,3 +100,38 @@ void RespondToCommand(tflite::ErrorReporter* error_reporter,
     lastCommandTime--;
   }
 }
+
+void drawWave(int16_t value) {
+  static int drawX = 320;
+
+  static int min = -1000;
+  static int max = 1000;
+
+  if (value < min) {
+    value = min;
+  }
+  if (max < value) {
+    value = max;
+  }
+
+  int drawY = map(value, min, max, 84, 240);
+
+  M5.Lcd.drawPixel(drawX, drawY, WHITE);
+  drawX++;
+  if (320 <= drawX) {
+    drawX = 0;
+    M5.Lcd.fillRect(0, 84, 320, 240-84, BLUE);
+  }
+}
+
+void drawInput(uint8_t *uint8) {
+  for (int y = 0; y < 49; y++) {
+    for (int x = 0; x < 40; x++) {
+      int pos = y * 40 + x;
+      int drawX = 160 + y * 3;
+      int drawY = 80 - x * 2;
+      int color = (uint8[pos]>>2) << 5;
+      M5.Lcd.fillRect(drawX, drawY, 3, 2, color);
+    }
+  }
+}

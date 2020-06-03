@@ -30,5 +30,7 @@ void RespondToCommand(tflite::ErrorReporter* error_reporter,
                       uint8_t score, bool is_new_command);
 
 void InitResponder();
+void drawWave(int16_t value);
+void drawInput(uint8_t *uint8);
 
 #endif  // TENSORFLOW_LITE_EXPERIMENTAL_MICRO_EXAMPLES_MICRO_SPEECH_COMMAND_RESPONDER_H_

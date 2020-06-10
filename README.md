@@ -37,8 +37,10 @@ The audio_provider and command_responder must be modified according to the envir
 
 A sketch customized to look like a specific board.
 
+- ESP-EYE
 - M5StickC
 - M5StackFire
+- ATOM Echo
 
 ### person_detection
 

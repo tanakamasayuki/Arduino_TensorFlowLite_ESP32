@@ -16,16 +16,16 @@
 #include "audio_provider.h"
 #include "micro_model_settings.h"
 #include <Arduino.h>
-#include <M5StickC.h>
+#include <M5Atom.h>
 #include <driver/i2s.h>
 
 #define I2S_NUM           I2S_NUM_0           // 0 or 1
 #define I2S_SAMPLE_RATE   16000
 
 #define I2S_PIN_CLK       I2S_PIN_NO_CHANGE
-#define I2S_PIN_WS        0
+#define I2S_PIN_WS        33
 #define I2S_PIN_DOUT      I2S_PIN_NO_CHANGE
-#define I2S_PIN_DIN       34
+#define I2S_PIN_DIN       23
 
 #define BUFFER_SIZE       512
 

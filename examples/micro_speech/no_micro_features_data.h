@@ -13,11 +13,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-#ifndef TENSORFLOW_LITE_EXPERIMENTAL_MICRO_EXAMPLES_MICRO_SPEECH_MICRO_FEATURES_NO_MICRO_FEATURES_DATA_H_
-#define TENSORFLOW_LITE_EXPERIMENTAL_MICRO_EXAMPLES_MICRO_SPEECH_MICRO_FEATURES_NO_MICRO_FEATURES_DATA_H_
+#ifndef TENSORFLOW_LITE_MICRO_EXAMPLES_MICRO_SPEECH_MICRO_FEATURES_NO_MICRO_FEATURES_DATA_H_
+#define TENSORFLOW_LITE_MICRO_EXAMPLES_MICRO_SPEECH_MICRO_FEATURES_NO_MICRO_FEATURES_DATA_H_
 
 extern const int g_no_micro_f9643d42_nohash_4_width;
 extern const int g_no_micro_f9643d42_nohash_4_height;
-extern const unsigned char g_no_micro_f9643d42_nohash_4_data[];
+extern const signed char g_no_micro_f9643d42_nohash_4_data[];
 
-#endif  // TENSORFLOW_LITE_EXPERIMENTAL_MICRO_EXAMPLES_MICRO_SPEECH_MICRO_FEATURES_NO_MICRO_FEATURES_DATA_H_
+#endif  // TENSORFLOW_LITE_MICRO_EXAMPLES_MICRO_SPEECH_MICRO_FEATURES_NO_MICRO_FEATURES_DATA_H_

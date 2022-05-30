@@ -13,12 +13,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 #include "tensorflow/lite/experimental/microfrontend/lib/fft.h"
+#include "tensorflow/lite/experimental/microfrontend/lib/kiss_fft_int16.h"
 
 #include <string.h>
 
-#define FIXED_POINT 16
-#include "third_party/kissfft/kiss_fft.h"
-#include "third_party/kissfft/tools/kiss_fftr.h"
 
 void FftCompute(struct FftState* state, const int16_t* input,
                 int input_scale_shift) {
@@ -27,20 +25,21 @@ void FftCompute(struct FftState* state, const int16_t* input,
 
   int16_t* fft_input = state->input;
   // First, scale the input by the given shift.
-  int i;
+  size_t i;
   for (i = 0; i < input_size; ++i) {
-    *fft_input++ = (*input++) << input_scale_shift;
+    fft_input[i] = static_cast<int16_t>(static_cast<uint16_t>(input[i])
+                                        << input_scale_shift);
   }
   // Zero out whatever else remains in the top part of the input.
   for (; i < fft_size; ++i) {
-    *fft_input++ = 0;
+    fft_input[i] = 0;
   }
 
   // Apply the FFT.
-  kiss_fftr(
-      reinterpret_cast<const kiss_fftr_cfg>(state->scratch),
-      state->input,
-      reinterpret_cast<kiss_fft_cpx*>(state->output));
+  kissfft_fixed16::kiss_fftr(
+    reinterpret_cast<kissfft_fixed16::kiss_fftr_cfg>(state->scratch),
+    state->input,
+    reinterpret_cast<kissfft_fixed16::kiss_fft_cpx*>(state->output));
 }
 
 void FftInit(struct FftState* state) {

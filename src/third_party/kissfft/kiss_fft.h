@@ -5,10 +5,9 @@
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
-#include <stdint.h>
 
 #ifdef __cplusplus
-extern "C" {
+extern "C++" {
 #endif
 
 /*
@@ -30,19 +29,13 @@ extern "C" {
 #define KISS_FFT_MALLOC(nbytes) _mm_malloc(nbytes,16)
 #define KISS_FFT_FREE _mm_free
 #else	
-#define KISS_FFT_MALLOC(X) (void*)(0) /* Patched. */
+#define KISS_FFT_MALLOC(X) (void*)(0x0) /* Patched. */
 #define KISS_FFT_FREE(X) /* Patched. */
 #endif	
 
 
-// Patched automatically by download_dependencies.sh so default is 16 bit.
-#ifndef FIXED_POINT
-#define FIXED_POINT (16)
-#endif
-// End patch.
-
 #ifdef FIXED_POINT
-#include <sys/types.h>	
+#include <stdint.h> /* Patched. */
 # if (FIXED_POINT == 32)
 #  define kiss_fft_scalar int32_t
 # else	

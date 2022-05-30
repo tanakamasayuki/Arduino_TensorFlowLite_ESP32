@@ -1,6 +1,7 @@
 # TensorFlowLite_ESP32
 
 https://www.tensorflow.org/lite/microcontrollers/overview
+
 https://github.com/espressif/tflite-micro-esp-examples
 
 ## Overview
@@ -17,6 +18,20 @@ The examples work best with the M5StickC(ESP32) board, which has a microphone an
 
 Outputs sine waves to serial outputs and build-in LEDs.
 
+### micro_speech
+
+This is a sample of speech recognition.
+The audio_provider and command_responder must be modified according to the environment in which they are used.
+
+### person_detection
+
+It is a person detection using a camera.
+The image_provider and detection_responder must be modified according to the environment in which they are used.
+
+## OldExamples
+
+This is a sample for older versions. It will not work as it is.
+
 ### magic_wand
 
 This is gesture recognition using acceleration.
@@ -29,11 +44,6 @@ A sketch customized to look like a specific board.
 - M5StickC
 - M5StackFire
 
-### micro_speech
-
-This is a sample of speech recognition.
-The audio_provider and command_responder must be modified according to the environment in which they are used.
-
 ### micro_speech_*
 
 A sketch customized to look like a specific board.
@@ -42,11 +52,6 @@ A sketch customized to look like a specific board.
 - M5StickC
 - M5StackFire
 - ATOM Echo
-
-### person_detection
-
-It is a person detection using a camera.
-The image_provider and detection_responder must be modified according to the environment in which they are used.
 
 ### person_detection_ESP32-Camera
 
@@ -120,17 +125,9 @@ A sketch customized to look like a specific board.
 
 ## How to make this library
 ```
-wget https://github.com/tensorflow/tensorflow/archive/v2.1.1.tar.gz
-tar zxvf v2.1.1.tar.gz
-cd tensorflow-2.1.1
-make -f tensorflow/lite/experimental/micro/tools/make/Makefile TARGET=esp generate_micro_speech_esp_project
+cd scripts
+bash ./sync_from_tflite_micro.sh
 ```
-
-This is the base file.
-
-- Renamed *.cc to *.cpp
-- Edit the include path
-- And, Minor corrections
 
 ## special thanks
 

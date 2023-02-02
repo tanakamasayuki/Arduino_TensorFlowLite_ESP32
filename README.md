@@ -18,6 +18,7 @@ The examples work best with the M5StickC(ESP32) board, which has a microphone an
 
 Outputs sine waves to serial outputs and build-in LEDs.
 
+<!---
 ### micro_speech
 
 This is a sample of speech recognition.
@@ -27,7 +28,7 @@ The audio_provider and command_responder must be modified according to the envir
 
 It is a person detection using a camera.
 The image_provider and detection_responder must be modified according to the environment in which they are used.
-
+-->
 ## OldExamples
 
 This is a sample for older versions. It will not work as it is.

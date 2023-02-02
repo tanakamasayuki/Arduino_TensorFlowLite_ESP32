@@ -1,4 +1,4 @@
-/* Copyright 2021 The TensorFlow Authors. All Rights Reserved.
+/* Copyright 2022 The TensorFlow Authors. All Rights Reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ limitations under the License.
 #include "tensorflow/lite/kernels/kernel_util.h"
 #include "tensorflow/lite/micro/kernels/kernel_util.h"
 #include "tensorflow/lite/micro/kernels/pooling.h"
+#include "tensorflow/lite/micro/micro_log.h"
 
 namespace tflite {
 
@@ -42,11 +43,16 @@ TfLiteStatus AverageEval(TfLiteContext* context, TfLiteNode* node) {
       AveragePoolingEvalFloat(context, node, params, data, input, output);
       break;
     case kTfLiteInt8:
-      AveragePoolingEvalQuantized(context, node, params, data, input, output);
+      AveragePoolingEvalQuantized<int8_t>(context, node, params, data, input,
+                                          output);
+      break;
+    case kTfLiteInt16:
+      AveragePoolingEvalQuantized<int16_t>(context, node, params, data, input,
+                                           output);
       break;
     default:
-      TF_LITE_KERNEL_LOG(context, "Input type %s is not currently supported",
-                         TfLiteTypeGetName(input->type));
+      MicroPrintf("Input type %s is not currently supported",
+                  TfLiteTypeGetName(input->type));
       return kTfLiteError;
   }
   return kTfLiteOk;
@@ -70,11 +76,16 @@ TfLiteStatus MaxEval(TfLiteContext* context, TfLiteNode* node) {
       MaxPoolingEvalFloat(context, node, params, data, input, output);
       break;
     case kTfLiteInt8:
-      MaxPoolingEvalQuantized(context, node, params, data, input, output);
+      MaxPoolingEvalQuantized<int8_t>(context, node, params, data, input,
+                                      output);
+      break;
+    case kTfLiteInt16:
+      MaxPoolingEvalQuantized<int16_t>(context, node, params, data, input,
+                                       output);
       break;
     default:
-      TF_LITE_KERNEL_LOG(context, "Type %s not currently supported.",
-                         TfLiteTypeGetName(input->type));
+      MicroPrintf("Type %s not currently supported.",
+                  TfLiteTypeGetName(input->type));
       return kTfLiteError;
   }
   return kTfLiteOk;

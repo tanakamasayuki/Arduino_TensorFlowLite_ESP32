@@ -22,8 +22,8 @@ limitations under the License.
 #include <string>
 #endif  // TF_LITE_STATIC_MEMORY
 
-#include "tensorflow/lite/c/builtin_op_data.h"
-#include "tensorflow/lite/c/common.h"
+#include "tensorflow/lite/core/c/builtin_op_data.h"
+#include "tensorflow/lite/core/c/common.h"
 
 namespace tflite {
 
@@ -175,6 +175,14 @@ inline int64_t NumElements(const TfLiteIntArray* dims) {
 
 inline int64_t NumElements(const TfLiteTensor* t) {
   return NumElements(t->dims);
+}
+
+inline int64_t NumElements(const int* dims, int num_dims) {
+  int64_t count = 1;
+  for (int i = 0; i < num_dims; ++i) {
+    count *= dims[i];
+  }
+  return count;
 }
 
 // Determines whether tensor is constant.

@@ -18,6 +18,9 @@ The examples work best with the M5StickC(ESP32) board, which has a microphone an
 
 Outputs sine waves to serial outputs and build-in LEDs.
 
+In [tanakamasayuki's](https://github.com/tanakamasayuki/Arduino_TensorFlowLite_ESP32) original version there are more examples,
+however, I could not not checked if they work as I only have an [ESP32 WROOM DevKit V1](https://grobotronics.com/esp32-development-board-devkit-v1.html).
+
 <!---
 ### micro_speech
 
@@ -28,7 +31,7 @@ The audio_provider and command_responder must be modified according to the envir
 
 It is a person detection using a camera.
 The image_provider and detection_responder must be modified according to the environment in which they are used.
--->
+
 ## OldExamples
 
 This is a sample for older versions. It will not work as it is.
@@ -123,11 +126,35 @@ A sketch customized to look like a specific board.
 
 - M5CameraModelB
 - T-CameraV05
+-->
 
 ## How to make this library
 ```
 cd scripts
 bash ./sync_from_tflite_micro.sh
+```
+
+You can also make this library using the last version of TensorFlowLite 
+(as synced from https://github.com/espressif/tflite-micro-esp-examples)
+```
+cd scripts
+bash ./sync_from_tflite_micro_version_schema_3.sh
+```
+
+This latter script will create the folder TensorFlowLite_ESP32_tmp
+```bash
+.
+└── TensorFlowLite_ESP32_tmp
+    ├── examples
+    │   └── hello_world
+    ├── LICENSE
+    └── src
+        ├── bus
+        ├── screen
+        ├── tensorflow
+        ├── TensorFlowLite_ESP32.h
+        ├── third_party
+        └── utility.h
 ```
 
 ## special thanks

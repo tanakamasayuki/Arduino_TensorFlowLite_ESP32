@@ -1,0 +1,27 @@
+- update README.md
+- updated for TFLITE_SCHEMA_VERSION 3 and tested with ESP32 WROOM DevKit V1
+- Update
+- Change base(https://github.com/espressif/tflite-micro-esp-examples)
+- Add M5CameraModelA Fix hello_world output
+- Update README.md
+- Add micro_speech_ATOM-Echo Fix micro_speech_M5StickC
+- Add micro_speech_ESP-EYE
+- Fix micro_speech examples
+- Fix micro_speech_M5StackFire
+- Release 0.6.0
+- Update README.md
+- Add examples
+- Add examples
+- Fix magic_wand_M5StickC Display
+- Fix print name
+- Update person_detection
+- Fix micro_speech_M5StickC
+- Fix micro_speech_M5StickC
+- Add person_detection examples(ESP32-Camera, T-CameraV05)
+- Add person_detection examples
+- Add micro_speech example
+- Update library.properties and README.md
+- Add README.md
+- fix library.properties
+- Add base 2.1.1
+- Initial commit

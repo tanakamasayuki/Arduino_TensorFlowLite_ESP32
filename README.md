@@ -4,6 +4,27 @@ https://www.tensorflow.org/lite/microcontrollers/overview
 
 https://github.com/espressif/tflite-micro-esp-examples
 
+## ⚠️ Notice / お知らせ
+
+**This library is no longer recommended, and its version is outdated.**
+
+The official Arduino ESP32 Core now bundles the official library
+[esp-tflite-micro](https://github.com/espressif/esp-tflite-micro).
+This library was originally ported before an official version existed, and its
+contents remain old. The official version is optimized (faster) and lets you use
+the latest release, so using it is now the best choice. Note, however, that there
+are almost no usage examples for the official version.
+
+---
+
+**このライブラリの利用は推奨しません。バージョンも古いままです。**
+
+公式の Arduino ESP32 Core には、公式ライブラリ
+[esp-tflite-micro](https://github.com/espressif/esp-tflite-micro)
+が組み込まれています。本ライブラリは公式版がまだ存在しなかった頃に移植したもので、
+中身は古いままです。現在は公式版のほうが最適化されていて高速であり、最新バージョンも
+利用できるため、公式版を使うのが最適です。ただし、公式版の利用例はほぼありません。
+
 ## Overview
 
 This library runs TensorFlow machine learning models on microcontrollers, allowing you to build AI/ML applications powered by deep learning and neural networks. 
